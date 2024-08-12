@@ -1,71 +1,99 @@
-# block-outliner README
+# Block Outliner
 
-This is the README for your extension "block-outliner". After writing up a brief description, we recommend including the following sections.
+**Block Outliner** is a Visual Studio Code extension that highlights code blocks enclosed in parentheses `()`, square brackets `[]`, and curly braces `{}` with colored outlines, making it easier to visualize and understand the code structure.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+- **Highlights Code Blocks**: Identifies and highlights blocks of code enclosed in parentheses, square brackets, and curly braces with different colors.
+- **Block Outlining**: Applies a border around entire blocks of code instead of applying decorations line by line.
+- **Toggle Activation**: Enable or disable the functionality with a command.
 
-For example if there is an image subfolder under your extension project workspace:
+## Installation
 
-\!\[feature X\]\(images/feature-x.png\)
+1.**Clone the repository:**
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+```bash
+   git clone https://github.com/your-username/block-outliner.git
+```
 
-## Requirements
+2.**Navigate to the project directory:**
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+```bash
+Copiar código
+cd block-outliner
+```
 
-## Extension Settings
+3.**Install dependencies:**
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+```bash
+npm install
+```
 
-For example:
+1.**Compile the project:**
 
-This extension contributes the following settings:
+```bash
+npm run compile
+```
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+1. **Load the extension in VSCode:**
 
-## Known Issues
+- Open VSCode.
+- Go to the Extensions panel (Ctrl+Shift+X).
+- Click "Install from VSIX" and select the generated .vsix file.
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+## Usage
 
-## Release Notes
+1. **Activate the Extension:**
 
-Users appreciate release notes as you update your extension.
+- Run the command Block Outliner: Block Outliner from the command palette (Ctrl+Shift+P).
+- The extension will be activated and will apply the outline around the code blocks.
 
-### 1.0.0
+2. **Deactivate the Extension:**
 
-Initial release of ...
+- Run the command Block Outliner: Block Outliner again to deactivate the extension and remove decorations.
 
-### 1.0.1
+## Behavior
 
-Fixed issue #.
+The extension applies decorations based on the type of code block:
 
-### 1.1.0
+- **Parentheses ():** Highlighted with a red border.
+- **Square Brackets** []: Highlighted with a blue border.
+- **Curly Braces {}:** Highlighted with a green border.
 
-Added features X, Y, and Z.
+Decorations are applied as a single block, covering the entire code between the delimiters.
 
----
+## Development
 
-## Following extension guidelines
+To contribute to the project:
 
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
+1. **Fork the repository.**
 
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
+2. **Create a branch for your feature:**
 
-## Working with Markdown
+```bash
+git checkout -b my-feature
+```
 
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
+3. **Make your changes and commit:**
 
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
+```bash
+git commit -am 'Add new feature'
+```
 
-## For more information
+4. **Push to the remote repository:**
 
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+```bash
+git push origin my-feature
+```
 
-**Enjoy!**
+5. **Open a Pull Request.**
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Contact
+
+For questions or support, please contact <magnomatos822@duckduckgo.com>.
+
+Thank you for using Block Outliner and for any contributions to the project!

@@ -10,21 +10,21 @@ export function activate(context: vscode.ExtensionContext) {
 
 	blockHighlightDecorationTypeRound = vscode.window.createTextEditorDecorationType({
 		border: '1px solid #ff7f7f',
-		borderRadius: '3px',
+		borderRadius: '2px',
 		backgroundColor: 'rgba(255,127,127,0.1)',
 		isWholeLine: false
 	});
 
 	blockHighlightDecorationTypeSquare = vscode.window.createTextEditorDecorationType({
 		border: '1px solid #7f7fff',
-		borderRadius: '3px',
+		borderRadius: '2px',
 		backgroundColor: 'rgba(127,127,255,0.1)',
 		isWholeLine: false
 	});
 
 	blockHighlightDecorationTypeCurly = vscode.window.createTextEditorDecorationType({
 		border: '1px solid #7fff7f',
-		borderRadius: '3px',
+		borderRadius: '2px',
 		backgroundColor: 'rgba(127,255,127,0.1)',
 		isWholeLine: false
 	});
@@ -61,6 +61,14 @@ export function activate(context: vscode.ExtensionContext) {
 	}, null, context.subscriptions);
 }
 
+function clearDecorations() {
+	if (vscode.window.activeTextEditor) {
+		vscode.window.activeTextEditor.setDecorations(blockHighlightDecorationTypeRound, []);
+		vscode.window.activeTextEditor.setDecorations(blockHighlightDecorationTypeSquare, []);
+		vscode.window.activeTextEditor.setDecorations(blockHighlightDecorationTypeCurly, []);
+	}
+}
+
 function updateDecorations() {
 	const activeEditor = vscode.window.activeTextEditor;
 	if (!activeEditor) {
@@ -71,10 +79,10 @@ function updateDecorations() {
 	const cursorPosition = activeEditor.selection.active;
 	const cursorOffset = activeEditor.document.offsetAt(cursorPosition);
 
-	// Clear previous decorations
+	// Limpar decorações anteriores
 	clearDecorations();
 
-	// Find all blocks
+	// Encontrar todos os blocos
 	const blocks = findBlocks(text);
 	const decorations: { [key: string]: vscode.DecorationOptions[] } = {
 		round: [],
@@ -82,18 +90,18 @@ function updateDecorations() {
 		curly: []
 	};
 
-	// Filter and apply decorations for nested blocks
+	// Filtrar e aplicar decorações para blocos aninhados
 	const nestedBlocks = findNestedBlocks(blocks, cursorOffset);
 	for (const block of nestedBlocks) {
+		// Criar uma Range que abrange todo o bloco
 		const startPos = activeEditor.document.positionAt(block.start);
 		const endPos = activeEditor.document.positionAt(block.end);
-
-		// Create a range that spans the entire block across multiple lines
 		const decorationOptions: vscode.DecorationOptions = {
-			range: new vscode.Range(startPos, endPos)
+			range: new vscode.Range(startPos, endPos),
+			hoverMessage: `Bloco ${block.type}`
 		};
 
-		// Apply the appropriate decoration based on the block type
+		// Aplicar a decoração apropriada com base no tipo de bloco
 		switch (block.type) {
 			case 'round':
 				decorations.round.push(decorationOptions);
@@ -107,19 +115,12 @@ function updateDecorations() {
 		}
 	}
 
-	// Apply all decorations
+	// Aplicar todas as decorações
 	activeEditor.setDecorations(blockHighlightDecorationTypeRound, decorations.round);
 	activeEditor.setDecorations(blockHighlightDecorationTypeSquare, decorations.square);
 	activeEditor.setDecorations(blockHighlightDecorationTypeCurly, decorations.curly);
 }
 
-function clearDecorations() {
-	if (vscode.window.activeTextEditor) {
-		vscode.window.activeTextEditor.setDecorations(blockHighlightDecorationTypeRound, []);
-		vscode.window.activeTextEditor.setDecorations(blockHighlightDecorationTypeSquare, []);
-		vscode.window.activeTextEditor.setDecorations(blockHighlightDecorationTypeCurly, []);
-	}
-}
 
 interface Block {
 	start: number;
