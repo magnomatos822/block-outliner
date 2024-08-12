@@ -2,14 +2,33 @@
   "name": "block-outliner",
   "displayName": "Block Outliner",
   "description": "BlockOutliner visually highlights code blocks enclosed by parentheses, brackets, and braces, enhancing readability and easing navigation through nested structures.",
-  "version": "0.0.1",
+  "icon": "img/block-outliner.png",
+  "version": "1.0.0",
+  "license": "MIT",
+  "publisher": "magnomatos822",
+  "author": {
+    "name": "Magno Matos",
+    "url": "https://github.com/magnomatos822",
+    "email": "magnomatos822@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/magnomatos822/vscode-block-outliner.git"
+  },
+  "homepage": "https://github.com/magnomatos822/vscode-block-outliner",
   "engines": {
     "vscode": "^1.92.0"
   },
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "keywords": [
+    "block",
+    "outliner"
+  ],
+  "activationEvents": [
+    "*"
+  ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
@@ -59,4 +78,3 @@
     "@vscode/test-electron": "^2.4.0"
   }
 }
-

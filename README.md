@@ -94,6 +94,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Contact
 
-For questions or support, please contact <magnomatos822@duckduckgo.com>.
+For questions or support, please contact <magnomatos822@gmail.com>.
 
 Thank you for using Block Outliner and for any contributions to the project!
