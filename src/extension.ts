@@ -53,64 +53,65 @@ export function activate(context: vscode.ExtensionContext) {
 			updateDecorations();
 		}
 	}, null, context.subscriptions);
+
+	vscode.workspace.onDidChangeTextDocument(event => {
+		if (isActive && event.document === vscode.window.activeTextEditor?.document) {
+			updateDecorations();
+		}
+	}, null, context.subscriptions);
 }
 
 function updateDecorations() {
-    const activeEditor = vscode.window.activeTextEditor;
-    if (!activeEditor) {
-        return;
-    }
+	const activeEditor = vscode.window.activeTextEditor;
+	if (!activeEditor) {
+		return;
+	}
 
-    const text = activeEditor.document.getText();
-    const cursorPosition = activeEditor.selection.active;
-    const cursorOffset = activeEditor.document.offsetAt(cursorPosition);
+	const text = activeEditor.document.getText();
+	const cursorPosition = activeEditor.selection.active;
+	const cursorOffset = activeEditor.document.offsetAt(cursorPosition);
 
-    // Clear previous decorations
-    clearDecorations();
+	// Clear previous decorations
+	clearDecorations();
 
-    // Find the blocks around the cursor
-    const blocks = findBlocks(text);
-    const decorations: { [key: string]: vscode.DecorationOptions[] } = {
-        round: [],
-        square: [],
-        curly: []
-    };
+	// Find all blocks
+	const blocks = findBlocks(text);
+	const decorations: { [key: string]: vscode.DecorationOptions[] } = {
+		round: [],
+		square: [],
+		curly: []
+	};
 
-    // Iterate over each block and create a continuous decoration
-    for (const block of blocks) {
-        if (cursorOffset >= block.start && cursorOffset <= block.end) {
-            const startPos = activeEditor.document.positionAt(block.start);
-            const endPos = activeEditor.document.positionAt(block.end);
+	// Filter and apply decorations for nested blocks
+	const nestedBlocks = findNestedBlocks(blocks, cursorOffset);
+	for (const block of nestedBlocks) {
+		const startPos = activeEditor.document.positionAt(block.start);
+		const endPos = activeEditor.document.positionAt(block.end);
 
-            // Create a range that spans the entire block across multiple lines
-            const decorationOptions: vscode.DecorationOptions = {
-                range: new vscode.Range(
-                    startPos.line, startPos.character,
-                    endPos.line, endPos.character
-                )
-            };
+		// Create a range that spans the entire block across multiple lines
+		const decorationOptions: vscode.DecorationOptions = {
+			range: new vscode.Range(startPos, endPos)
+		};
 
-            // Apply the appropriate decoration based on the block type
-            switch (block.type) {
-                case 'round':
-                    decorations.round.push(decorationOptions);
-                    break;
-                case 'square':
-                    decorations.square.push(decorationOptions);
-                    break;
-                case 'curly':
-                    decorations.curly.push(decorationOptions);
-                    break;
-            }
-        }
-    }
+		// Apply the appropriate decoration based on the block type
+		switch (block.type) {
+			case 'round':
+				decorations.round.push(decorationOptions);
+				break;
+			case 'square':
+				decorations.square.push(decorationOptions);
+				break;
+			case 'curly':
+				decorations.curly.push(decorationOptions);
+				break;
+		}
+	}
 
-    // Apply all decorations
-    activeEditor.setDecorations(blockHighlightDecorationTypeRound, decorations.round);
-    activeEditor.setDecorations(blockHighlightDecorationTypeSquare, decorations.square);
-    activeEditor.setDecorations(blockHighlightDecorationTypeCurly, decorations.curly);
+	// Apply all decorations
+	activeEditor.setDecorations(blockHighlightDecorationTypeRound, decorations.round);
+	activeEditor.setDecorations(blockHighlightDecorationTypeSquare, decorations.square);
+	activeEditor.setDecorations(blockHighlightDecorationTypeCurly, decorations.curly);
 }
-
 
 function clearDecorations() {
 	if (vscode.window.activeTextEditor) {
@@ -126,18 +127,6 @@ interface Block {
 	type: 'round' | 'square' | 'curly';
 }
 
-function findContainingBlock(text: string, cursorOffset: number): Block | null {
-	const blocks = findBlocks(text);
-
-	for (const block of blocks) {
-		if (cursorOffset >= block.start && cursorOffset <= block.end) {
-			return block;
-		}
-	}
-
-	return null;
-}
-
 function findBlocks(text: string): Block[] {
 	const blocks: Block[] = [];
 	const stack: { index: number, type: 'round' | 'square' | 'curly' }[] = [];
@@ -151,18 +140,18 @@ function findBlocks(text: string): Block[] {
 	};
 
 	let inString = false;
-	let stringStart = -1;
+	let stringChar = '';
 
 	for (let i = 0; i < text.length; i++) {
 		const char = text[i];
 
-		if (char === '"' && (i === 0 || text[i - 1] !== '\\')) {
-			if (inString) {
+		// Toggle string state
+		if ((char === '"' || char === "'" || char === '`') && (i === 0 || text[i - 1] !== '\\')) {
+			if (inString && stringChar === char) {
 				inString = false;
-				blocks.push({ start: stringStart, end: i + 1, type: 'round' }); // Temporary block type
-			} else {
+			} else if (!inString) {
 				inString = true;
-				stringStart = i;
+				stringChar = char;
 			}
 			continue;
 		}
@@ -181,28 +170,22 @@ function findBlocks(text: string): Block[] {
 		}
 	}
 
-	return mergeBlocks(blocks);
+	return blocks;
 }
 
-function mergeBlocks(blocks: Block[]): Block[] {
-	if (blocks.length === 0) return [];
+function findNestedBlocks(blocks: Block[], cursorOffset: number): Block[] {
+	const nestedBlocks: Block[] = [];
 
-	blocks.sort((a, b) => a.start - b.start);
-
-	const mergedBlocks: Block[] = [];
-	let currentBlock = blocks[0];
-
-	for (let i = 1; i < blocks.length; i++) {
-		if (blocks[i].start <= currentBlock.end) {
-			currentBlock.end = Math.max(currentBlock.end, blocks[i].end);
-		} else {
-			mergedBlocks.push(currentBlock);
-			currentBlock = blocks[i];
+	for (const block of blocks) {
+		if (cursorOffset >= block.start && cursorOffset <= block.end) {
+			nestedBlocks.push(block);
 		}
 	}
 
-	mergedBlocks.push(currentBlock);
-	return mergedBlocks;
+	// Sort blocks by their size (smallest to largest) to highlight nested blocks first
+	nestedBlocks.sort((a, b) => (a.end - a.start) - (b.end - b.start));
+
+	return nestedBlocks;
 }
 
 export function deactivate() {
