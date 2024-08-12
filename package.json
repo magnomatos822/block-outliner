@@ -26,9 +26,6 @@
     "block",
     "outliner"
   ],
-  "activationEvents": [
-    "*"
-  ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
