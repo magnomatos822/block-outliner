@@ -3,7 +3,7 @@
   "displayName": "Block Outliner",
   "description": "BlockOutliner visually highlights code blocks enclosed by parentheses, brackets, and braces, enhancing readability and easing navigation through nested structures.",
   "icon": "img/block-outliner.png",
-  "version": "1.0.2",
+  "version": "1.1.4",
   "license": "MIT",
   "publisher": "MagnoNMatos",
   "author": {
@@ -37,6 +37,7 @@
     "nested",
     "code"
   ],
+
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [

@@ -5,6 +5,9 @@ let blockHighlightDecorationTypeSquare: vscode.TextEditorDecorationType;
 let blockHighlightDecorationTypeCurly: vscode.TextEditorDecorationType;
 let isActive = false;
 
+// Chave para salvar o estado de ativação
+const ACTIVATION_STATE_KEY = 'blockOutliner.isActive';
+
 export function activate(context: vscode.ExtensionContext) {
 	console.log('Extension "block-outliner" is now active');
 
@@ -12,8 +15,18 @@ export function activate(context: vscode.ExtensionContext) {
 	blockHighlightDecorationTypeSquare = createDecorationType('#7f7fff');
 	blockHighlightDecorationTypeCurly = createDecorationType('#7fff7f');
 
+	// Recupera o estado salvo e ativa/desativa conforme necessário
+	isActive = context.globalState.get(ACTIVATION_STATE_KEY, false);
+	if (isActive) {
+		updateDecorations();
+	}
+
 	let disposable = vscode.commands.registerCommand('block-outliner.blockOutliner', () => {
 		isActive = !isActive;
+
+		// Salva o estado de ativação
+		context.globalState.update(ACTIVATION_STATE_KEY, isActive);
+
 		vscode.window.showInformationMessage(`Block Outliner ${isActive ? 'activated' : 'deactivated'}`);
 		if (isActive) {
 			updateDecorations();
