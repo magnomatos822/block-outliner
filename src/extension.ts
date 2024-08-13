@@ -8,34 +8,16 @@ let isActive = false;
 export function activate(context: vscode.ExtensionContext) {
 	console.log('Extension "block-outliner" is now active');
 
-	blockHighlightDecorationTypeRound = vscode.window.createTextEditorDecorationType({
-		border: '1px solid #ff7f7f',
-		borderRadius: '2px',
-		// backgroundColor: 'rgba(255,127,127,0.1)',
-		isWholeLine: false
-	});
-
-	blockHighlightDecorationTypeSquare = vscode.window.createTextEditorDecorationType({
-		border: '1px solid #7f7fff',
-		borderRadius: '2px',
-		// backgroundColor: 'rgba(127,127,255,0.1)',
-		isWholeLine: false
-	});
-
-	blockHighlightDecorationTypeCurly = vscode.window.createTextEditorDecorationType({
-		border: '1px solid #7fff7f',
-		borderRadius: '2px',
-		// backgroundColor: 'rgba(127,255,127,0.1)',
-		isWholeLine: false
-	});
+	blockHighlightDecorationTypeRound = createDecorationType('#ff7f7f');
+	blockHighlightDecorationTypeSquare = createDecorationType('#7f7fff');
+	blockHighlightDecorationTypeCurly = createDecorationType('#7fff7f');
 
 	let disposable = vscode.commands.registerCommand('block-outliner.blockOutliner', () => {
 		isActive = !isActive;
+		vscode.window.showInformationMessage(`Block Outliner ${isActive ? 'activated' : 'deactivated'}`);
 		if (isActive) {
-			vscode.window.showInformationMessage('Block Outliner activated');
 			updateDecorations();
 		} else {
-			vscode.window.showInformationMessage('Block Outliner deactivated');
 			clearDecorations();
 		}
 	});
@@ -61,11 +43,20 @@ export function activate(context: vscode.ExtensionContext) {
 	}, null, context.subscriptions);
 }
 
+function createDecorationType(color: string): vscode.TextEditorDecorationType {
+	return vscode.window.createTextEditorDecorationType({
+		border: `1px solid ${color}`,
+		borderRadius: '2px',
+		isWholeLine: false
+	});
+}
+
 function clearDecorations() {
-	if (vscode.window.activeTextEditor) {
-		vscode.window.activeTextEditor.setDecorations(blockHighlightDecorationTypeRound, []);
-		vscode.window.activeTextEditor.setDecorations(blockHighlightDecorationTypeSquare, []);
-		vscode.window.activeTextEditor.setDecorations(blockHighlightDecorationTypeCurly, []);
+	const activeEditor = vscode.window.activeTextEditor;
+	if (activeEditor) {
+		activeEditor.setDecorations(blockHighlightDecorationTypeRound, []);
+		activeEditor.setDecorations(blockHighlightDecorationTypeSquare, []);
+		activeEditor.setDecorations(blockHighlightDecorationTypeCurly, []);
 	}
 }
 
@@ -79,48 +70,37 @@ function updateDecorations() {
 	const cursorPosition = activeEditor.selection.active;
 	const cursorOffset = activeEditor.document.offsetAt(cursorPosition);
 
-	// Limpar decorações anteriores
 	clearDecorations();
 
-	// Encontrar todos os blocos
 	const blocks = findBlocks(text);
+	const nestedBlocks = findNestedBlocks(blocks, cursorOffset);
+	const decorations = getDecorationsForBlocks(nestedBlocks, activeEditor);
+
+	activeEditor.setDecorations(blockHighlightDecorationTypeRound, decorations.round);
+	activeEditor.setDecorations(blockHighlightDecorationTypeSquare, decorations.square);
+	activeEditor.setDecorations(blockHighlightDecorationTypeCurly, decorations.curly);
+}
+
+function getDecorationsForBlocks(blocks: Block[], editor: vscode.TextEditor): { [key: string]: vscode.DecorationOptions[] } {
 	const decorations: { [key: string]: vscode.DecorationOptions[] } = {
 		round: [],
 		square: [],
 		curly: []
 	};
 
-	// Filtrar e aplicar decorações para blocos aninhados
-	const nestedBlocks = findNestedBlocks(blocks, cursorOffset);
-	for (const block of nestedBlocks) {
-		// Criar uma Range que abrange todo o bloco
-		const startPos = activeEditor.document.positionAt(block.start);
-		const endPos = activeEditor.document.positionAt(block.end);
+	blocks.forEach(block => {
+		const startPos = editor.document.positionAt(block.start);
+		const endPos = editor.document.positionAt(block.end);
 		const decorationOptions: vscode.DecorationOptions = {
 			range: new vscode.Range(startPos, endPos),
-			hoverMessage: `Bloco ${block.type}`
+			hoverMessage: `Block ${block.type}`
 		};
 
-		// Aplicar a decoração apropriada com base no tipo de bloco
-		switch (block.type) {
-			case 'round':
-				decorations.round.push(decorationOptions);
-				break;
-			case 'square':
-				decorations.square.push(decorationOptions);
-				break;
-			case 'curly':
-				decorations.curly.push(decorationOptions);
-				break;
-		}
-	}
+		decorations[block.type].push(decorationOptions);
+	});
 
-	// Aplicar todas as decorações
-	activeEditor.setDecorations(blockHighlightDecorationTypeRound, decorations.round);
-	activeEditor.setDecorations(blockHighlightDecorationTypeSquare, decorations.square);
-	activeEditor.setDecorations(blockHighlightDecorationTypeCurly, decorations.curly);
+	return decorations;
 }
-
 
 interface Block {
 	start: number;
@@ -133,7 +113,6 @@ function findBlocks(text: string): Block[] {
 	const stack: { index: number, type: 'round' | 'square' | 'curly' }[] = [];
 	const openSymbols = '({[';
 	const closeSymbols = ')}]';
-
 	const typeMapping: { [key: string]: 'round' | 'square' | 'curly' } = {
 		'(': 'round',
 		'[': 'square',
@@ -146,7 +125,6 @@ function findBlocks(text: string): Block[] {
 	for (let i = 0; i < text.length; i++) {
 		const char = text[i];
 
-		// Toggle string state
 		if ((char === '"' || char === "'" || char === '`') && (i === 0 || text[i - 1] !== '\\')) {
 			if (inString && stringChar === char) {
 				inString = false;
@@ -157,9 +135,7 @@ function findBlocks(text: string): Block[] {
 			continue;
 		}
 
-		if (inString) {
-			continue;
-		}
+		if (inString) continue;
 
 		if (openSymbols.includes(char)) {
 			stack.push({ index: i, type: typeMapping[char] });
@@ -175,28 +151,12 @@ function findBlocks(text: string): Block[] {
 }
 
 function findNestedBlocks(blocks: Block[], cursorOffset: number): Block[] {
-	const nestedBlocks: Block[] = [];
-
-	for (const block of blocks) {
-		if (cursorOffset >= block.start && cursorOffset <= block.end) {
-			nestedBlocks.push(block);
-		}
-	}
-
-	// Sort blocks by their size (smallest to largest) to highlight nested blocks first
-	nestedBlocks.sort((a, b) => (a.end - a.start) - (b.end - b.start));
-
-	return nestedBlocks;
+	return blocks.filter(block => cursorOffset >= block.start && cursorOffset <= block.end)
+		.sort((a, b) => (a.end - a.start) - (b.end - b.start));
 }
 
 export function deactivate() {
-	if (blockHighlightDecorationTypeRound) {
-		blockHighlightDecorationTypeRound.dispose();
-	}
-	if (blockHighlightDecorationTypeSquare) {
-		blockHighlightDecorationTypeSquare.dispose();
-	}
-	if (blockHighlightDecorationTypeCurly) {
-		blockHighlightDecorationTypeCurly.dispose();
-	}
+	blockHighlightDecorationTypeRound?.dispose();
+	blockHighlightDecorationTypeSquare?.dispose();
+	blockHighlightDecorationTypeCurly?.dispose();
 }
