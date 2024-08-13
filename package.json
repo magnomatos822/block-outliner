@@ -74,6 +74,16 @@
           "type": "string",
           "default": "#7fff7f",
           "description": "Color for curly brackets"
+        },
+        "block-outliner.supportedLanguages": {
+          "type": "array",
+          "default": [
+            "javascript",
+            "python",
+            "java",
+            "cpp"
+          ],
+          "description": "List of languages supported by Block Outliner"
         }
       }
     }
