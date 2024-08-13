@@ -3,7 +3,7 @@
   "displayName": "Block Outliner",
   "description": "BlockOutliner visually highlights code blocks enclosed by parentheses, brackets, and braces, enhancing readability and easing navigation through nested structures.",
   "icon": "img/block-outliner.png",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "license": "MIT",
   "publisher": "MagnoNMatos",
   "author": {
@@ -59,6 +59,21 @@
           "type": "boolean",
           "default": true,
           "description": "Enable or disable Block Outliner"
+        },
+        "block-outliner.roundColor": {
+          "type": "string",
+          "default": "#ff7f7f",
+          "description": "Color for round brackets"
+        },
+        "block-outliner.squareColor": {
+          "type": "string",
+          "default": "#7f7fff",
+          "description": "Color for square brackets"
+        },
+        "block-outliner.curlyColor": {
+          "type": "string",
+          "default": "#7fff7f",
+          "description": "Color for curly brackets"
         }
       }
     }
