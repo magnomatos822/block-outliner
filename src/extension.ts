@@ -11,21 +11,21 @@ export function activate(context: vscode.ExtensionContext) {
 	blockHighlightDecorationTypeRound = vscode.window.createTextEditorDecorationType({
 		border: '1px solid #ff7f7f',
 		borderRadius: '2px',
-		backgroundColor: 'rgba(255,127,127,0.1)',
+		// backgroundColor: 'rgba(255,127,127,0.1)',
 		isWholeLine: false
 	});
 
 	blockHighlightDecorationTypeSquare = vscode.window.createTextEditorDecorationType({
 		border: '1px solid #7f7fff',
 		borderRadius: '2px',
-		backgroundColor: 'rgba(127,127,255,0.1)',
+		// backgroundColor: 'rgba(127,127,255,0.1)',
 		isWholeLine: false
 	});
 
 	blockHighlightDecorationTypeCurly = vscode.window.createTextEditorDecorationType({
 		border: '1px solid #7fff7f',
 		borderRadius: '2px',
-		backgroundColor: 'rgba(127,255,127,0.1)',
+		// backgroundColor: 'rgba(127,255,127,0.1)',
 		isWholeLine: false
 	});
 
