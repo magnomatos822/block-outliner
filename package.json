@@ -3,62 +3,77 @@
   "displayName": "Block Outliner",
   "description": "BlockOutliner visually highlights code blocks enclosed by parentheses, brackets, and braces, enhancing readability and easing navigation through nested structures.",
   "icon": "img/block-outliner.png",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "license": "MIT",
   "publisher": "MagnoNMatos",
   "author": {
     "name": "Magno Matos",
     "url": "https://github.com/magnomatos822",
-    "email": "magnomatos822@gmail.com"
+    "email": "magnomatos822@outlook.com"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/magnomatos822/vscode-block-outliner.git"
   },
   "homepage": "https://github.com/magnomatos822/vscode-block-outliner",
+  "bugs": {
+    "url": "https://github.com/magnomatos822/vscode-block-outliner/issues"
+  },
   "engines": {
     "vscode": "^1.92.0"
   },
   "categories": [
-    "Other"
+    "Programming Languages",
+    "Linters"
   ],
   "keywords": [
     "block",
-    "outliner"
+    "outliner",
+    "syntax",
+    "highlight",
+    "brackets",
+    "parentheses",
+    "braces",
+    "nested",
+    "code"
   ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
         "command": "block-outliner.blockOutliner",
-        "title": "Block Outliner: Block Outliner"
+        "title": "Block Outliner: Toggle Block Outliner"
       }
     ],
     "keybindings": [
       {
         "command": "block-outliner.blockOutliner",
-        "key": "ctrl+alt+b"
+        "key": "ctrl+alt+b",
+        "when": "editorTextFocus"
       }
     ],
-    "languages": [
-      {
-        "id": "*",
-        "extensions": [
-          "*"
-        ]
+    "configuration": {
+      "title": "Block Outliner",
+      "properties": {
+        "block-outliner.blockOutlinerEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable or disable Block Outliner"
+        }
       }
-    ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
-    "compile": "webpack",
-    "watch": "webpack --watch",
+    "compile": "webpack --mode production",
+    "watch": "webpack --mode development --watch",
     "package": "webpack --mode production --devtool hidden-source-map",
     "compile-tests": "tsc -p . --outDir out",
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
-    "test": "vscode-test"
+    "test": "vscode-test",
+    "prepare": "npm run compile"
   },
   "devDependencies": {
     "@types/vscode": "^1.92.0",
@@ -73,5 +88,11 @@
     "webpack-cli": "^5.1.4",
     "@vscode/test-cli": "^0.0.9",
     "@vscode/test-electron": "^2.4.0"
+  },
+  "documentation": {
+    "url": "https://github.com/magnomatos822/vscode-block-outliner/wiki"
+  },
+  "changelog": {
+    "url": "https://github.com/magnomatos822/vscode-block-outliner/blob/main/CHANGELOG.md"
   }
 }
