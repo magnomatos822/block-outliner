@@ -138,6 +138,7 @@ function findBlocks(text: string): Block[] {
 	for (let i = 0; i < text.length; i++) {
 		const char = text[i];
 
+		// Handle strings
 		if ((char === '"' || char === "'" || char === '`') && (i === 0 || text[i - 1] !== '\\')) {
 			if (inString && stringChar === char) {
 				inString = false;
@@ -150,9 +151,13 @@ function findBlocks(text: string): Block[] {
 
 		if (inString) continue;
 
+		// Handle opening symbols
 		if (openSymbols.includes(char)) {
 			stack.push({ index: i, type: typeMapping[char] });
-		} else if (closeSymbols.includes(char)) {
+		}
+
+		// Handle closing symbols
+		else if (closeSymbols.includes(char)) {
 			if (stack.length > 0 && openSymbols.indexOf(text[stack[stack.length - 1].index]) === closeSymbols.indexOf(char)) {
 				const { index, type } = stack.pop()!;
 				blocks.push({ start: index, end: i + 1, type });
@@ -163,26 +168,27 @@ function findBlocks(text: string): Block[] {
 	return blocks;
 }
 
+
 // function findNestedBlocks(blocks: Block[], cursorOffset: number): Block[] {
 // 	return blocks.filter(block => cursorOffset >= block.start && cursorOffset <= block.end)
 // 		.sort((a, b) => (a.end - a.start) - (b.end - b.start));
 // }
 function findNestedBlocks(blocks: Block[], cursorOffset: number): Block[] {
-    // Filtra os blocos que contêm o cursor
-    let nestedBlocks = blocks.filter(block => cursorOffset > block.start && cursorOffset < block.end);
+	// Filtra os blocos que contêm o cursor
+	let nestedBlocks = blocks.filter(block => cursorOffset > block.start && cursorOffset < block.end);
 
-    // Seleciona o menor bloco que contém o cursor, mas não está contido em outro bloco
-    if (nestedBlocks.length > 0) {
-        let smallestBlock = nestedBlocks[0];
-        for (let i = 1; i < nestedBlocks.length; i++) {
-            if (nestedBlocks[i].start >= smallestBlock.start && nestedBlocks[i].end <= smallestBlock.end) {
-                smallestBlock = nestedBlocks[i];
-            }
-        }
-        return [smallestBlock];
-    }
+	// Seleciona o menor bloco que contém o cursor, mas não está contido em outro bloco
+	if (nestedBlocks.length > 0) {
+		let smallestBlock = nestedBlocks[0];
+		for (let i = 1; i < nestedBlocks.length; i++) {
+			if (nestedBlocks[i].start >= smallestBlock.start && nestedBlocks[i].end <= smallestBlock.end) {
+				smallestBlock = nestedBlocks[i];
+			}
+		}
+		return [smallestBlock];
+	}
 
-    return [];
+	return [];
 }
 
 
