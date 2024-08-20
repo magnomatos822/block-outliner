@@ -3,7 +3,7 @@
   "displayName": "Block Outliner",
   "description": "BlockOutliner visually highlights code blocks enclosed by parentheses, brackets, and braces, enhancing readability and easing navigation through nested structures.",
   "icon": "img/block-outliner.png",
-  "version": "1.2.8",
+  "version": "1.2.9",
   "license": "MIT",
   "publisher": "MagnoNMatos",
   "author": {
@@ -81,10 +81,7 @@
         "block-outliner.supportedLanguages": {
           "type": "array",
           "default": [
-            "javascript",
-            "python",
-            "java",
-            "cpp"
+            "*"
           ],
           "description": "List of languages supported by Block Outliner"
         }
