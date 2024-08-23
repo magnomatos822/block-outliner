@@ -1,4 +1,7 @@
 # Block Outliner
+![GitHub commits since latest release (branch)](https://img.shields.io/github/commits-since/magnomatos822/block-outliner/latest/main)
+![GitHub contributors](https://img.shields.io/github/contributors/magnomatos822/block-outliner)
+![GitHub package.json version](https://img.shields.io/github/package-json/v/magnomatos822/block-outliner)
 
 **Block Outliner** is a Visual Studio Code extension that visually highlights code blocks enclosed by parentheses, brackets, and braces, making it easier to read and navigate through nested structures.
 
