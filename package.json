@@ -20,7 +20,7 @@
     "url": "https://github.com/magnomatos822/vscode-block-outliner/issues"
   },
   "engines": {
-    "vscode": "^1.91.0"
+    "vscode": "^1.92.0"
   },
   "categories": [
     "Programming Languages",
