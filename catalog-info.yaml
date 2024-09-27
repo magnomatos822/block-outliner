@@ -1,0 +1,10 @@
+https://github.com/magnomatos822/block-outliner/catalog-info.yaml
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: block-outliner
+  annotations:
+    github.com/project-slug: magnomatos822/block-outliner
+spec:
+  type: other
+  lifecycle: unknown
